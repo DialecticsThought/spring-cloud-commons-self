@@ -164,7 +164,10 @@ public class RefreshScope extends GenericScope
 	@ManagedOperation(description = "Dispose of the current instance of all beans "
 			+ "in this scope and force a refresh on next method execution.")
 	public void refreshAll() {
+		// 空缓存中的所有 BeanLifecycleWrapper，并销毁所有的 BeanLifecycleWrapper
+		// TODO 进入
 		super.destroy();
+		//发布刷新事件 刷新作用域为 RefreshScope 的bean
 		this.context.publishEvent(new RefreshScopeRefreshedEvent());
 	}
 

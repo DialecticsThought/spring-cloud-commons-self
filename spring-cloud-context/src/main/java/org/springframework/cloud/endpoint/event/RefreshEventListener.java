@@ -54,10 +54,13 @@ public class RefreshEventListener implements SmartApplicationListener {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
+		//事件类型判断
 		if (event instanceof ApplicationReadyEvent) {
+			//应用就绪事件
 			handle((ApplicationReadyEvent) event);
 		}
 		else if (event instanceof RefreshEvent) {
+			//配置刷新事件
 			handle((RefreshEvent) event);
 		}
 	}
@@ -67,8 +70,11 @@ public class RefreshEventListener implements SmartApplicationListener {
 	}
 
 	public void handle(RefreshEvent event) {
+		//获取 ready 状态
 		if (this.ready.get()) { // don't handle events before app is ready
 			log.debug("Event received " + event.getEventDesc());
+			//刷新环境
+			// TODO 进入
 			Set<String> keys = this.refresh.refresh();
 			log.info("Refresh keys changed: " + keys);
 		}

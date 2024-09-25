@@ -108,14 +108,18 @@ public class PropertySourceBootstrapConfiguration implements ApplicationListener
 		if (!bootstrapProperties.isInitializeOnContextRefresh() || !applicationContext.getEnvironment()
 			.getPropertySources()
 			.contains(BootstrapApplicationListener.BOOTSTRAP_PROPERTY_SOURCE_NAME)) {
+			//TODO 进入
 			doInitialize(applicationContext);
 		}
 	}
 
 	private void doInitialize(ConfigurableApplicationContext applicationContext) {
+		//属性来源
 		List<PropertySource<?>> composite = new ArrayList<>();
+		//propertySourceLocators 排序 propertySourceLocators 其实就是配置中心的相关信息
 		AnnotationAwareOrderComparator.sort(this.propertySourceLocators);
 		boolean empty = true;
+		//获取容器的环境配置环境信息
 		ConfigurableEnvironment environment = applicationContext.getEnvironment();
 		for (PropertySourceLocator locator : this.propertySourceLocators) {
 			Collection<PropertySource<?>> source = locator.locateCollection(environment);
@@ -136,17 +140,25 @@ public class PropertySourceBootstrapConfiguration implements ApplicationListener
 			empty = false;
 		}
 		if (!empty) {
+			//可变属性
 			MutablePropertySources propertySources = environment.getPropertySources();
+			//日志配置
 			String logConfig = environment.resolvePlaceholders("${logging.config:}");
+			//读取环境
 			LogFile logFile = LogFile.get(environment);
 			for (PropertySource<?> p : environment.getPropertySources()) {
+				//如果 bootstrapProperties 包含 就移出
 				if (p.getName().startsWith(BOOTSTRAP_PROPERTY_SOURCE_NAME)) {
 					propertySources.remove(p.getName());
 				}
 			}
+			//插入属性来源
 			insertPropertySources(propertySources, composite);
+			//重新初始化日志系统
 			reinitializeLoggingSystem(environment);
+			//设置日志级别
 			setLogLevels(applicationContext, environment);
+			//出来配置文件
 			handleProfiles(environment);
 		}
 	}

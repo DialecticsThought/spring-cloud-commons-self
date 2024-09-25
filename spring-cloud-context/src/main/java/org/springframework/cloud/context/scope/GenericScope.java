@@ -343,7 +343,12 @@ public class GenericScope
 	 * concurrent access (for instance).
 	 *
 	 * @author Dave Syer
-	 *
+	 * <pre>
+	 *  TODO
+	 *   Bean 包装：它包装了实际的 Bean 实例，提供管理 Bean 生命周期的钩子。
+	 *   生命周期管理：确保当 Bean 被销毁时（例如在刷新期间），能够被正确清理，并在需要时创建新的实例。
+	 *   动态 Bean 处理：在像 Spring Cloud 这样可以在运行时更改配置的环境中，这个包装器有助于确保 Bean 可以动态重新加载或刷新。
+	 * </pre>
 	 */
 	private static class BeanLifecycleWrapper {
 

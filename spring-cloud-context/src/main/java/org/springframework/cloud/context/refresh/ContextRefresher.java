@@ -91,15 +91,25 @@ public abstract class ContextRefresher {
 	}
 
 	public synchronized Set<String> refresh() {
+		// TODO 进入
+		//刷新环境 本质是重新创建一个 ConfigurableApplicationContext
+		// 将新的 ConfigurableApplicationContext 环境信息复制到 当前容器上下文
 		Set<String> keys = refreshEnvironment();
+		//刷新范围内所有 bean 的当前实例 并在下一个方法执行时强制刷新
+		// TODO 进入
 		this.scope.refreshAll();
 		return keys;
 	}
 
 	public synchronized Set<String> refreshEnvironment() {
+		//获取当前容器中的配置信息 并转换为 map
 		Map<String, Object> before = extract(this.context.getEnvironment().getPropertySources());
+		// 更新环境变量
+		// TODO 可以查看org.springframework.cloud.context.refresh.LegacyContextRefresher.updateEnvironment
 		updateEnvironment();
+		// 比较更新前后的配置信息，找出发生了变化的键，并返回
 		Set<String> keys = changes(before, extract(this.context.getEnvironment().getPropertySources())).keySet();
+		//发布环境信息变更事件
 		this.context.publishEvent(new EnvironmentChangeEvent(this.context, keys));
 		return keys;
 	}
