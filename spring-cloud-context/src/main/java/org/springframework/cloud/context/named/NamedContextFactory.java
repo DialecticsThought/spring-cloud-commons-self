@@ -55,38 +55,38 @@ import org.springframework.util.Assert;
  *   针对不同的服务客户端（如多个 Feign 客户端、不同的数据源客户端等）提供独立的 ApplicationContext 上下文环境。
  *   每个客户端的上下文可以包含该客户端特有的 Bean、配置、属性等，从而实现配置隔离和依赖管理的独立性
  *
- *	在 Spring Cloud 中，尤其是在使用 NamedContextFactory 这种框架时，
- *	每个 Feign 客户端、Ribbon 客户端等可以拥有自己的上下文，便于针对不同的远程服务或资源做定制化配置。
- *	这些上下文共享父级应用上下文中的通用配置，同时允许为每个客户端定义独立的配置
+ * 	在 Spring Cloud 中，尤其是在使用 NamedContextFactory 这种框架时，
+ * 	每个 Feign 客户端、Ribbon 客户端等可以拥有自己的上下文，便于针对不同的远程服务或资源做定制化配置。
+ * 	这些上下文共享父级应用上下文中的通用配置，同时允许为每个客户端定义独立的配置
  *
- *	在微服务环境中，一个应用可能会调用多个不同的远程服务。
- *	例如，一个应用可能既需要调用用户服务（user-service），也需要调用订单服务（order-service）。每个服务都可以通过一个 Feign 客户端来调用。
- *	不同的远程服务可能有不同的超时设置、重试策略、负载均衡策略等。这就需要为每个客户端提供独立的上下文
+ * 	在微服务环境中，一个应用可能会调用多个不同的远程服务。
+ * 	例如，一个应用可能既需要调用用户服务（user-service），也需要调用订单服务（order-service）。每个服务都可以通过一个 Feign 客户端来调用。
+ * 	不同的远程服务可能有不同的超时设置、重试策略、负载均衡策略等。这就需要为每个客户端提供独立的上下文
  *
  * 不同客户端的上下文能够带来以下好处：
- *		配置隔离：每个客户端可以有独立的配置，例如不同的超时设置、拦截器、编码解码器等。
- *		Bean 隔离：每个客户端的上下文可以有不同的 Bean 定义，防止客户端之间的 Bean 依赖冲突。
- *		灵活性和可扩展性：在运行时根据不同的客户端需求加载不同的配置，使应用更加灵活。
- *		多实例支持：在同一应用中可以针对不同的服务使用多个 Feign 客户端或 Ribbon 客户端，且每个客户端可以有自己独立的上下文。
+ * 		配置隔离：每个客户端可以有独立的配置，例如不同的超时设置、拦截器、编码解码器等。
+ * 		Bean 隔离：每个客户端的上下文可以有不同的 Bean 定义，防止客户端之间的 Bean 依赖冲突。
+ * 		灵活性和可扩展性：在运行时根据不同的客户端需求加载不同的配置，使应用更加灵活。
+ * 		多实例支持：在同一应用中可以针对不同的服务使用多个 Feign 客户端或 Ribbon 客户端，且每个客户端可以有自己独立的上下文。
  *
- *	TODO Spring Cloud OpenFeign 使用 NamedContextFactory 来管理多个 Feign 客户端的上下文
- *	  eg:
- *	    @FeignClient(name = "user-service", url = "http://user-service.com", configuration = UserServiceFeignConfig.class)
+ * 	TODO Spring Cloud OpenFeign 使用 NamedContextFactory 来管理多个 Feign 客户端的上下文
+ * 	  eg:
+ *        @FeignClient(name = "user-service", url = "http://user-service.com", configuration = UserServiceFeignConfig.class)
  * 		public interface UserServiceClient {
- * 		    @GetMapping("/users/{id}")
- * 		    User getUserById(@PathVariable("id") Long id);
- * 		}
- *		 @FeignClient(name = "order-service", url = "http://order-service.com", configuration = OrderServiceFeignConfig.class)
- *		 public interface OrderServiceClient {
- *		     @GetMapping("/orders/{id}")
- *		     Order getOrderById(@PathVariable("id") Long id);
- *		 }
- *		这个例子中，UserServiceClient 和 OrderServiceClient 分别是两个不同的 Feign 客户端，调用不同的远程服务（用户服务和订单服务）。每个客户端都有自己的配置类：
+ *            @GetMapping("/users/{id}")
+ *            User getUserById(@PathVariable("id") Long id);
+ *        }
+ *         @FeignClient(name = "order-service", url = "http://order-service.com", configuration = OrderServiceFeignConfig.class)
+ * 		 public interface OrderServiceClient {
+ *             @GetMapping("/orders/{id}")
+ *             Order getOrderById(@PathVariable("id") Long id);
+ *         }
+ * 		这个例子中，UserServiceClient 和 OrderServiceClient 分别是两个不同的 Feign 客户端，调用不同的远程服务（用户服务和订单服务）。每个客户端都有自己的配置类：
  * 		UserServiceFeignConfig.class：用于 user-service 的客户端配置。
  * 		OrderServiceFeignConfig.class：用于 order-service 的客户端配置
  *
- *	通过 NamedContextFactory，Spring 会为 user-service 和 order-service 创建两个独立的上下文，每个上下文都有各自的配置环境。
- *	这些独立的上下文可以确保每个客户端都有自己的 ApplicationContext，从而避免相互干扰
+ * 	通过 NamedContextFactory，Spring 会为 user-service 和 order-service 创建两个独立的上下文，每个上下文都有各自的配置环境。
+ * 	这些独立的上下文可以确保每个客户端都有自己的 ApplicationContext，从而避免相互干扰
  * </pre>
  *
  * @param <C> specification
@@ -127,7 +127,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 	}
 
 	public NamedContextFactory(Class<?> defaultConfigType, String propertySourceName, String propertyName,
-			Map<String, ApplicationContextInitializer<GenericApplicationContext>> applicationContextInitializers) {
+							   Map<String, ApplicationContextInitializer<GenericApplicationContext>> applicationContextInitializers) {
 		this.defaultConfigType = defaultConfigType;
 		this.propertySourceName = propertySourceName;
 		this.propertyName = propertyName;
@@ -166,6 +166,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 
 	/**
 	 * 为指定名称的客户端获取或创建一个独立的 GenericApplicationContext 上下文
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -183,6 +184,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 
 	/**
 	 * 创建指定名称的 `GenericApplicationContext` 实例
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -207,6 +209,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 
 	/**
 	 * 用于将特定名称的 Bean 配置注册到给定的 GenericApplicationContext 中
+	 *
 	 * @param name
 	 * @param context
 	 */
@@ -237,6 +240,12 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 		registry.register(PropertyPlaceholderAutoConfiguration.class, this.defaultConfigType);
 	}
 
+	/**
+	 * 用于构建新的 GenericApplicationContext 实例，并配置其基本属性，如类加载器、父上下文、属性源等
+	 *
+	 * @param name
+	 * @return
+	 */
 	public GenericApplicationContext buildContext(String name) {
 		// https://github.com/spring-cloud/spring-cloud-netflix/issues/3101
 		// https://github.com/spring-cloud/spring-cloud-openfeign/issues/475
@@ -252,15 +261,13 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 			if (parent instanceof ConfigurableApplicationContext) {
 				beanFactory.setBeanClassLoader(
 						((ConfigurableApplicationContext) parent).getBeanFactory().getBeanClassLoader());
-			}
-			else {// 否则，使用当前类的类加载器
+			} else {// 否则，使用当前类的类加载器
 				beanFactory.setBeanClassLoader(classLoader);
 			}
 			// 根据 AOT（提前生成的工件）是否存在，选择 `GenericApplicationContext` 或 `AnnotationConfigApplicationContext`
 			context = AotDetector.useGeneratedArtifacts() ? new GenericApplicationContext(beanFactory)
 					: new AnnotationConfigApplicationContext(beanFactory);
-		}
-		else {
+		} else {
 			// 如果没有父上下文，根据是否有 AOT 生成的工件创建上下文
 			context = AotDetector.useGeneratedArtifacts() ? new GenericApplicationContext()
 					: new AnnotationConfigApplicationContext();
@@ -272,9 +279,9 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 		// 获取上下文的环境配置，并将新的属性源添加到环境的首位
 		// 新属性源包含 `propertySourceName` 和 `propertyName` 以及 `name` 映射的值
 		context.getEnvironment()
-			.getPropertySources()
-			.addFirst(
-					new MapPropertySource(this.propertySourceName, Collections.singletonMap(this.propertyName, name)));
+				.getPropertySources()
+				.addFirst(
+						new MapPropertySource(this.propertySourceName, Collections.singletonMap(this.propertyName, name)));
 
 		// 如果有父上下文，将其设置为新上下文的父级，以共享父级环境和 Bean
 		if (this.parent != null) {
@@ -292,14 +299,26 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 		return this.getClass().getSimpleName() + "-" + name;
 	}
 
+	/**
+	 * 指定上下文中查找单个指定类型的 Bean 实例。如果未找到该类型的 Bean，返回 null
+	 *
+	 * @param name
+	 * @param type
+	 * @param <T>
+	 * @return
+	 */
 	public <T> T getInstance(String name, Class<T> type) {
+		// 调用 `getContext` 方法，根据名称获取或创建一个 `GenericApplicationContext` 实例、
+		// TODO 进入
 		GenericApplicationContext context = getContext(name);
 		try {
+			// 调用 `context.getBean(type)` 方法，尝试获取指定类型的 Bean
+			// 如果找到，则返回该 Bean 实例
 			return context.getBean(type);
-		}
-		catch (NoSuchBeanDefinitionException e) {
+		} catch (NoSuchBeanDefinitionException e) {
 			// ignore
 		}
+		// 如果未找到指定类型的 Bean，返回 `null`
 		return null;
 	}
 
@@ -312,18 +331,66 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 		return context.getBeanProvider(type);
 	}
 
+	/**
+	 * 泛型方法 `getInstance`，用于获取指定上下文中的泛型 Bean 实例
+	 * <pre>
+	 *    Step 1: 定义泛型 Bean
+	 *		public interface Service<T> {
+	 *     		T performAction();
+	 * 		}
+	 *
+	 * 		public class Client {}
+	 *
+	 * 		public class ClientService implements Service<Client> {
+	 * 		    @Override
+	 * 		    public Client performAction() {
+	 * 		        return new Client();
+	 * 		    }
+	 * 		}
+	 *    Step 2: 将 ClientService 注册到上下文中
+	 *		在 order-service 上下文中注册 ClientService 作为一个 Bean。
+	 *		@Configuration
+	 * 		public class OrderServiceConfig {
+	 * 		    @Bean
+	 * 		    public Service<Client> clientService() {
+	 * 		        return new ClientService();
+	 * 		    }
+	 * 		}
+	 *     Step 3: 使用 getInstance 方法获取 Bean 实例
+	 *     		// 获取 order-service 上下文中的 Service<Client> Bean 实例
+	 * 			Service<Client> clientService = namedContextFactory.getInstance("order-service", Service.class, Client.class);
+	 * </pre>
+	 * @param name 表示上下文的名称
+	 * @param clazz 表示目标 Bean 的基础类
+	 * @param generics 表示泛型参数类型
+	 * @return
+	 * @param <T>
+	 */
 	public <T> T getInstance(String name, Class<?> clazz, Class<?>... generics) {
+		// 使用 `ResolvableType.forClassWithGenerics` 创建带泛型的 `ResolvableType` 实例
+		// 这样可以将基础类和泛型类型信息组合成一个完整的类型
 		ResolvableType type = ResolvableType.forClassWithGenerics(clazz, generics);
+		// 调用 `getInstance(name, type)` 重载方法，传入生成的 `ResolvableType`
+		// 返回指定泛型类型的 Bean 实例
 		return getInstance(name, type);
 	}
 
+	/**
+	 * 泛型方法 `getInstance`，用于根据 `ResolvableType` 获取指定上下文中的 Bean 实例
+	 * @param name 上下文的名称
+	 * @param type 目标 Bean 的 `ResolvableType`
+	 * @return
+	 * @param <T>
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name, ResolvableType type) {
+		// 调用 `getContext` 方法，获取或创建指定名称的 `GenericApplicationContext`
 		GenericApplicationContext context = getContext(name);
+		// 使用 `BeanFactoryUtils.beanNamesForTypeIncludingAncestors` 获取上下文及其父上下文中所有符合 `type` 类型的 Bean 名称
 		String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context, type);
-		for (String beanName : beanNames) {
-			if (context.isTypeMatch(beanName, type)) {
-				return (T) context.getBean(beanName);
+		for (String beanName : beanNames) { // 遍历所有匹配类型的 Bean 名称
+			if (context.isTypeMatch(beanName, type)) {  // 检查当前 Bean 名称是否与指定 `ResolvableType` 匹配
+				return (T) context.getBean(beanName); // 如果匹配，则获取该 Bean 实例并返回
 			}
 		}
 		return null;
@@ -346,9 +413,21 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 		return beans.isEmpty() ? null : beans.get(0);
 	}
 
+	/**
+	 * 指定上下文中获取指定类型的所有 Bean，并返回一个 Map，其中包含 Bean 的名称和实例
+	 *
+	 * @param name 表示上下文的名称
+	 * @param type 表示目标 Bean 的类型
+	 * @param <T>
+	 * @return
+	 */
 	public <T> Map<String, T> getInstances(String name, Class<T> type) {
+		// 调用 `getContext` 方法，根据名称获取或创建一个 `GenericApplicationContext` 实例
+		// TODO 进入
 		GenericApplicationContext context = getContext(name);
-
+		// 调用 `BeanFactoryUtils.beansOfTypeIncludingAncestors` 方法，
+		// 查找上下文及其父上下文中类型为 `type` 的所有 Bean
+		// 返回一个包含 Bean 名称和实例的 `Map`
 		return BeanFactoryUtils.beansOfTypeIncludingAncestors(context, type);
 	}
 
@@ -362,6 +441,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 	public interface Specification {
 		// 上下文的名称，通常是客户端名称（例如服务名或客户端的标识）
 		String getName();
+
 		// 获取 该上下文关联的配置类数组
 		Class<?>[] getConfiguration();
 
